@@ -11,7 +11,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -66,10 +69,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Transactional
     public void setUserRoles(User user) {
         if (user.getRoles() == null) {
-            user.setRoles(new HashSet<Role>());
+            user.setRoles(new LinkedHashSet<Role>());
         }
         user.getListRoles().forEach(x -> user.getRoles().add(roleService.getRoleByRoleName(x)));
     }
+
+
 
     @Override
     @Transactional

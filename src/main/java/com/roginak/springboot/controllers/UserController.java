@@ -37,6 +37,10 @@ public class UserController {
 
     @RequestMapping(value = "admin")
     public String adminPage(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User cur_user = userService.getUserByLogin(auth.getName());
+        model.addAttribute("user", cur_user);
+        model.addAttribute("userRolesString", roleService.getStringWithRoles(cur_user));
         model.addAttribute("users", userService.getAllUsers());
         return "admin/all";
     }

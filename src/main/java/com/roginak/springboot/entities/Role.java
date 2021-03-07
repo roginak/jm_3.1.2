@@ -7,7 +7,7 @@ import java.util.Set;
 
 @Entity(name = "Role")
 @Table(name = "roles")
-public class Role implements GrantedAuthority {
+public class Role implements GrantedAuthority, Comparable<Role> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,11 +50,17 @@ public class Role implements GrantedAuthority {
         return roleName;
     }
 
+
     @Override
     public String toString() {
         return "Role{" +
                 "id=" + id +
                 ", roleName='" + roleName + '\'' +
                 '}';
+    }
+
+    @Override
+    public int compareTo(Role o) {
+        return roleName.compareTo(o.getRoleName());
     }
 }

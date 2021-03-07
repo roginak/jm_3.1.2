@@ -2,14 +2,17 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <link href="/webjars/bootstrap/4.6.0/css/bootstrap.css" rel="stylesheet" />
+    <link th:href="@{../static/style.css}" rel="stylesheet" type="text/css"/>
     <title>All users</title>
 </head>
 <body>
-
-<h2>All users</h2>
-
-<br>
-
+<header>
+    <nav id="nav-header" class="navbar navbar-dark bg-dark">
+        <!-- Navbar content -->
+        <h2>[[${user.getLogin()}]] with roles: [[${userRolesString}]]</h2>
+    </nav>
+</header>
 <table>
     <tr>
         <th>Id</th>
@@ -22,15 +25,15 @@
         <th>Contact</th>
     </tr>
 
-    <tr th:each="user : ${users}">
-        <td th:text="${user.getId()}"></td>
-        <td th:text="${user.getLogin()}"></td>
-        <td th:text="${user.getRoles()}"></td>
-        <td th:text="${user.getName()}"></td>
-        <td th:text="${user.getSurname()}"></td>
-        <td th:text="${user.getPosition()}"></td>
-        <td th:text="${user.getSalary()}"></td>
-        <td th:text="${user.getContact()}"></td>
+    <tr th:each="cur_user : ${users}">
+        <td th:text="${cur_user.getId()}"></td>
+        <td th:text="${cur_user.getLogin()}"></td>
+        <td th:text="${userRolesString}"></td>
+        <td th:text="${cur_user.getName()}"></td>
+        <td th:text="${cur_user.getSurname()}"></td>
+        <td th:text="${cur_user.getPosition()}"></td>
+        <td th:text="${cur_user.getSalary()}"></td>
+        <td th:text="${cur_user.getContact()}"></td>
         <td>
             <a th:href="@{/admin/edit/{id}(id=${user.id})}">Edit</a>
             <a th:href="@{/admin/delete/{id}(id=${user.id})}">Delete</a>
@@ -51,6 +54,7 @@
 <form th:action="@{/logout}" method="post">
     <button type="submit">Sign Out</button>
 </form>
-
+<script type="text/javascript" src="/webjars/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript" src="/webjars/bootstrap/4.6.0/js/bootstrap.min.js"></script>
 </body>
 </html>
