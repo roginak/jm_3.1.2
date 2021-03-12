@@ -26,8 +26,8 @@ public class RoleServiceImpl implements RoleService {
     public String getStringWithRoles(User user) {
         final String[] res = {""};
         List<Role> sortedList = user.getRoles().stream().sorted().collect(Collectors.toList());
-        sortedList.forEach(x -> res[0] += x.getRoleName() + ", ");
-        return res[0].substring(0, res[0].length()-2);
+        sortedList.forEach(x -> res[0] += x.getRoleName() + " ");
+        return res[0];
     }
 
     @Override

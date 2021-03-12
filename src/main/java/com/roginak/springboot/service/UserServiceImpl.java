@@ -10,12 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
-
+import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
@@ -73,7 +68,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
         user.getListRoles().forEach(x -> user.getRoles().add(roleService.getRoleByRoleName(x)));
     }
-
 
 
     @Override
