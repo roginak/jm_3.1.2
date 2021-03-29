@@ -7,7 +7,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @Controller
 @RequestMapping("/")
@@ -19,35 +22,38 @@ public class UserController {
     public UserController(UserService userService, RoleService roleService) {
         this.userService = userService;
         this.roleService = roleService;
+
     }
 
 
     @GetMapping(value = "login")
-    public String loginPage() {
+    public String loginPage(ModelMap map) {
+        map.addAttribute("msg", "Successfully logged in");
+
         return "login";
     }
 
     @GetMapping("/user")
-    public String getUserInfo(Model model) {
+    public String getUserInfo(Model model, Principal p) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        model.addAttribute("user", userService.getUserByLogin(auth.getName()));
-
+        model.addAttribute("user", userService.getUserByLogin(p.getName()));
+        model.addAttribute("roleService", roleService);
         return "user/info";
     }
 
     @RequestMapping(value = "admin")
     public String adminPage(Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        User cur_user = userService.getUserByLogin(authentication.getName());
+        model.addAttribute("user", cur_user);
+        model.addAttribute("roleService", roleService);
         model.addAttribute("users", userService.getAllUsers());
+        model.addAttribute("new_user", new User());
+
         return "admin/all";
     }
 
-    @GetMapping("/admin/add")
-    public String newUser(Model model) {
-        model.addAttribute("user", new User());
-        model.addAttribute("roles", roleService.getAllRoles());
-
-        return "admin/add";
-    }
 
     @PostMapping("/admin/add")
     public String create(@ModelAttribute("user") User user) {
@@ -55,24 +61,35 @@ public class UserController {
         return "redirect:/admin";
     }
 
-    @GetMapping("/admin/delete/{id}")
-    public String deleteUser(@PathVariable("id") int id) {
+    @PostMapping("/admin/delete")
+    public String deleteUser(@ModelAttribute("cur_user") User user) {
+        int id = user.getId();
         userService.deleteUser(id);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User us = (User) auth.getPrincipal();
+        if (us.getId() == id) {
+            return "redirect:/login";
+        }
 
         return "redirect:/admin";
     }
 
-    @GetMapping("/admin/edit/{id}")
-    public String showUser(@PathVariable("id") int id, Model model) {
-        model.addAttribute("user", userService.getUser(id));
-        model.addAttribute("roles", roleService.getAllRoles());
-
-        return "admin/edit";
-    }
-
     @PostMapping("/admin/edit")
-    public String edit(@ModelAttribute("user") User user) {
+    public String edit(@ModelAttribute("cur_user") User user) {
         userService.editUser(user);
+
+        int id = user.getId();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User us = (User) auth.getPrincipal();
+        if (us.getId() == id) {
+            us.setLogin(user.getLogin());
+            if (user.getRoles().stream()
+                    .anyMatch(r -> r.getRoleName().equals("admin"))) {
+                return "redirect:/admin";
+            } else {
+                return "redirect:/login";
+            }
+        }
 
         return "redirect:/admin";
     }
